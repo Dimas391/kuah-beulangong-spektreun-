@@ -9,9 +9,36 @@ import kari from '@/assets/kari-menu.jpg';
 import cincang from '@/assets/cincang-menu.jpg';
 import sumsum from '@/assets/sumsum-menu.jpg';
 import timun from '@/assets/timun-menu.jpg';
+import nasiGurih from '@/assets/Nasi_Gurih.png';
+import nasiPutih from '@/assets/Nasi_Putih.png';
+import acar from '@/assets/Acar.png';
+import emping from '@/assets/Emping.png';
+import tehHijau from '@/assets/Tehi Hijau.png';
+import jeruk from '@/assets/Jeruk.png';
 import type { Database } from '@/integrations/supabase/types';
 type Dish=Database['public']['Tables']['menu_items']['Row'];
-const images:Record<string,string>={kari,cincang,sumsum,timun};
+const images:Record<string,string>={
+  kari,
+  cincang,
+  sumsum,
+  timun,
+  Nasi_Gurih: nasiGurih,
+  nasi_gurih: nasiGurih,
+  'nasi-gurih': nasiGurih,
+  Nasi_Putih: nasiPutih,
+  nasi_putih: nasiPutih,
+  'nasi-putih': nasiPutih,
+  Acar: acar,
+  acar: acar,
+  Emping: emping,
+  emping: emping,
+  'Tehi Hijau': tehHijau,
+  'Teh Hijau': tehHijau,
+  'teh-hijau': tehHijau,
+  teh: tehHijau,
+  Jeruk: jeruk,
+  jeruk: jeruk,
+};
 export function Brand(){return <Link to="/" className="brand" aria-label="Kari Kambing Cb Sp Ektreun — Beranda"><span className="brand-mark">cb.</span><span className="brand-label">Kari Kambing<br/>Simpang Ek Treun · Aceh</span></Link>;}
 export function RestaurantShell({children}:{children:ReactNode}){
  const {pathname}=useLocation();const [mobile,setMobile]=useState(false);const [order,setOrder]=useState(false);const home=pathname==='/';
@@ -21,7 +48,7 @@ export function RestaurantShell({children}:{children:ReactNode}){
 }
 function Footer(){return <footer className="footer"><div className="wrap"><div className="footer-top"><div><Brand/><p className="mt-6 max-w-xs text-muted-foreground">Dari blangong, untuk kebersamaan.<br/>Cita rasa khas Aceh di Simpang Ek Tren.</p></div><div><h3>JELAJAHI</h3><div className="footer-links"><Link to="/menu">Menu Kami</Link><Link to="/cerita">Cerita Kami</Link><Link to="/katering">Layanan Katering</Link><Link to="/jurnal">Jurnal Kuliner</Link></div></div><div><h3>MARI SINGGAH</h3><div className="footer-links"><Link to="/lokasi">Simpang Ek Tren, Aceh <ArrowUpRight className="inline size-3"/></Link><Link to="/galeri">Galeri & Suasana</Link><Link to="/lokasi">Kontak & Petunjuk Arah</Link></div></div></div><div className="footer-bottom"><span>© 2026 Kari Kambing Cb Sp Ektreun.</span><span>Kuah beulangong · Rempah pilihan · Tradisi Aceh</span></div></div></footer>;}
 export function PageHeading({label,title,copy}:{label:string;title:string;copy?:string}){return <section className="page-heading-band"><div className="wrap page-heading"><span className="eyebrow">{label}</span><h1>{title}</h1>{copy&&<p>{copy}</p>}</div></section>;}
-export function DishCard({dish,onOrder}:{dish:Dish;onOrder:()=>void}){const image=images[dish.image_key];return <article className="dish"><div className="dish-image">{image?<img src={image} alt={dish.name} width={768} height={768} loading="lazy"/>:<div className="plain-dish"><Utensils/><span>{dish.name}</span></div>}</div><div className="dish-meta"><h3>{dish.name}</h3><Leaf className="size-3 text-muted-foreground"/></div><p>{dish.description}</p><div className="dish-bottom"><span>{dish.price?new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(dish.price):'Harga dikonfirmasi'}</span><Button variant="ghost" size="icon" disabled={!dish.available} aria-label={`Pesan ${dish.name}`} onClick={onOrder}>{dish.available?<Plus/>:<X/>}</Button></div>{!dish.available&&<p>Habis hari ini</p>}</article>;}
+export function DishCard({dish,onOrder}:{dish:Dish;onOrder:()=>void}){const image=images[dish.image_key]||(dish.image_key?.startsWith('http')||dish.image_key?.startsWith('/')?dish.image_key:undefined);return <article className="dish"><div className="dish-image">{image?<img src={image} alt={dish.name} width={768} height={768} loading="lazy"/>:<div className="plain-dish"><Utensils/><span>{dish.name}</span></div>}</div><div className="dish-meta"><h3>{dish.name}</h3><Leaf className="size-3 text-muted-foreground"/></div><p>{dish.description}</p><div className="dish-bottom"><span>{dish.price?new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(dish.price):'Harga dikonfirmasi'}</span><Button variant="ghost" size="icon" disabled={!dish.available} aria-label={`Pesan ${dish.name}`} onClick={onOrder}>{dish.available?<Plus/>:<X/>}</Button></div>{!dish.available&&<p>Habis hari ini</p>}</article>;}
 export function OrderDialog({onClose,initialId}:{onClose:()=>void;initialId?:string}){
  const {data}=useSuspenseQuery(restaurantQuery);const [counts,setCounts]=useState<Record<string,number>>(initialId?{[initialId]:1}:{});const [time,setTime]=useState('');const [method,setMethod]=useState('Takeaway');const [copied,setCopied]=useState(false);const [error,setError]=useState('');
  const selected=data.menu.filter(d=>(counts[d.id]||0)>0);const text=orderMessage(selected.map(d=>({name:d.name,quantity:counts[d.id]||0})),time,method);
